@@ -1,0 +1,43 @@
+- name: create Docker volumes for Elasticsearch
+  include_role:
+    name: common
+    tasks_from: prepare-volumes
+  with_items:
+    - { name: elasticsearch-data, path: "{{ elasticsearch.data_dir }}" }
+    - { name: elasticsearch-conf, path: "{{ elasticsearch.conf_dir }}" }
+
+- name: increase max_map_count in sysctl
+  block:
+    - ansible.posix.sysctl:
+        name: vm.max_map_count
+        value: 262144
+        state: present
+        reload: True
+
+- name: pull Elasticsearch image
+  docker_image:
+    name: "{{ elasticsearch.image }}"
+    tag: "{{ elasticsearch.version }}"
+    source: pull
+
+- name: start Elasticsearch
+  docker_container:
+    name: elasticsearch
+    image: "{{ elasticsearch.image }}:{{ elasticsearch.version }}"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+      - elasticsearch-conf:/usr/share/elasticsearch/config
+    restart_policy: unless-stopped
+    env:
+      node.name: elasticsearch
+      discovery.type: 'single-node'
+      bootstrap.memory_lock: "true"
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    ports:
+      - 9200:9200
+      - 9300:9300
+    ulimits:
+      - 'memlock:-1:-1'
+    networks:
+      - name: elk
+    purge_networks: True

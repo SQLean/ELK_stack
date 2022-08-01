@@ -1,0 +1,7 @@
+all:
+  hosts:
+    elk:
+      ansible_host: 127.0.0.1
+      ansible_user: me
+      ansible_python_interpreter: /usr/bin/python3
+

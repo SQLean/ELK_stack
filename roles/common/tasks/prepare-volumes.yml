@@ -1,0 +1,9 @@
+- file:
+    name: "{{ item.path }}"
+    state: directory
+- docker_volume:
+    volume_name: "{{ item.name }}"
+    driver_options:
+      type: none
+      o: bind
+      device: "{{ item.path }}"

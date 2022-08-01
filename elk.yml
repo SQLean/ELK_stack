@@ -1,0 +1,19 @@
+- hosts: elk
+  become: True
+  tasks:
+    - name: install Docker
+      include_role:
+        name: docker
+      tags: docker
+- hosts: elk
+  become: True
+  pre_tasks:
+    - name: create 'elk' network
+      docker_network:
+        name: elk
+        state: present
+  roles:
+    - { name: elasticsearch, tags: elasticsearch }
+    - { name: logstash, tags: logstash }
+    - { name: kibana, tags: kibana }
+

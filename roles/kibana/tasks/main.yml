@@ -1,0 +1,29 @@
+- name: create Docker volume for Kibana
+  include_role:
+    name: common
+    tasks_from: prepare-volumes
+  with_items:
+    - { name: kibana-conf, path: "{{ kibana.conf_dir }}" }
+
+- name: pull Kibana image
+  docker_image:
+    name: "{{ kibana.image }}"
+    tag: "{{ kibana.version }}"
+    source: pull
+
+- name: start Kibana
+  docker_container:
+    name: kibana
+    image: "{{ kibana.image }}:{{ kibana.version }}"
+    volumes:
+      - kibana-conf:/usr/share/kibana/config
+    restart_policy: unless-stopped
+    env:
+      elasticsearch.url: "http://elasticsearch:9200"
+      elasticsearch.hosts: "http://elasticsearch:9200"
+      server.name: kibana
+    ports:
+      - 5601:5601
+    networks:
+      - name: elk
+    purge_networks: True

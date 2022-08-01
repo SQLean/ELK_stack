@@ -1,0 +1,36 @@
+- name: create Docker volumes for Logstash
+  include_role:
+    name: common
+    tasks_from: prepare-volumes
+  with_items:
+    - { name: logstash-conf, path: "{{ logstash.conf_dir }}" }
+    - { name: logstash-pipeline, path: "{{ logstash.pipeline_dir }}" }
+
+- name: pull Logstash image
+  docker_image:
+    name: "{{ logstash.image }}"
+    tag: "{{ logstash.version }}"
+    source: pull
+
+- name: deploy Logstash pipeline configuration
+  copy:
+    src: logstash.conf
+    dest: "{{ logstash.pipeline_dir }}"
+
+- name: start Logstash
+  docker_container:
+    name: logstash
+    image: "{{ logstash.image }}:{{ logstash.version }}"
+    volumes:
+      - logstash-pipeline:/usr/share/logstash/pipeline
+      - logstash-conf:/usr/share/logstash/config
+    restart_policy: unless-stopped
+    env:
+      monitoring.elasticsearch.hosts: "http://elasticsearch:9200"
+      LS_JAVA_OPTS: "-Xms512m -Xmx512m"
+    ports:
+      - 9600:9600
+      - 5044:5044
+    networks:
+      - name: elk
+    purge_networks: True

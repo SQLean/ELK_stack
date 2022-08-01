@@ -1,0 +1,16 @@
+elasticsearch:
+  version: 8.3.3
+  image: elasticsearch
+  data_dir: /opt/elk/elasticsearch/data
+  conf_dir: /opt/elk/elasticsearch/conf
+  logs_dir: /opt/elk/elasticsearch/logs
+logstash:
+  version: 8.3.3
+  image: logstash
+  conf_dir: /opt/elk/logstash/conf
+  pipeline_dir: /opt/elk/logstash/pipeline
+  logs_dir: /opt/elk/logstash/logs
+kibana:
+  version: 8.3.3
+  image: kibana
+  conf_dir: /opt/elk/kibana/conf
