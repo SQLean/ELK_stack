@@ -33,6 +33,8 @@
       discovery.type: 'single-node'
       bootstrap.memory_lock: "true"
       ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+      ELASTIC_PASSWORD: "{{ elasticsearch.password }}"
+      KIBANA_PASSWORD: "{{ kibana.password }}"
     ports:
       - 9200:9200
       - 9300:9300

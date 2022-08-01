@@ -4,6 +4,7 @@ elasticsearch:
   data_dir: /opt/elk/elasticsearch/data
   conf_dir: /opt/elk/elasticsearch/conf
   logs_dir: /opt/elk/elasticsearch/logs
+  password: pass
 logstash:
   version: 8.3.3
   image: logstash
@@ -13,4 +14,5 @@ logstash:
 kibana:
   version: 8.3.3
   image: kibana
+  password: pass
   conf_dir: /opt/elk/kibana/conf
